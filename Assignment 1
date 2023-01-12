@@ -1,0 +1,673 @@
+```{r load-packages, message=FALSE}
+#install.packages(c('tidyverse', 'openintro', 'readr')) #uncomment this to download the packages
+library(tidyverse)
+library(openintro)
+library(readr)
+```
+
+--- 
+
+# ====== Section 1 =======
+
+You’ve been provided operational data on a 10 item reading comprehension test taken by N= 830 5th grade students. We will call this `data`. All items are binary scored. This test is intended to be used across a wide range of student reading comprehension abilities for low-stakes formative purposes in the classroom. Complete and report the following analyses:
+
+```{r data}
+data <- read_csv("https://raw.githubusercontent.com/jinnieshinufl/EDF-6436/main/assignment/data/timss_g4_2015_10_reading_items.csv", col_names = FALSE) 
+data <- as.data.frame(data)
+colnames(data) <- c('item1', 'item2', 'item3', 'item4', 'item5',
+                    'item6', 'item7', 'item8', 'item9', 'item10')
+
+head(data) # this is the dataframe we will work with. 
+```
+
+--- 
+
+# Q1
+
+*(3 points)* 
+
+- **Code**: Provide the CTT item difficulty estimate (p) for each item. 
+- **Response 1**: Select an item that you consider to be relatively easy for the sample of 831 examinees. 
+- **Response 2**: Would this be true for other samples from the same population? Why or why not?
+- **Response 3**: Would this be true for samples from another population? Why or why not?
+
+```{r q1}
+# Your code here 
+  item_diff1 <- sum(data$item1)/831
+  cat("Item Difficulty for item 1 =", item_diff1)
+
+  item_diff2 <- sum(data$item2)/831
+  cat(" Item Difficulty for item 2 =", item_diff2)
+
+  item_diff3 <- sum(data$item3)/831
+  cat(" Item Difficulty for item 3 =", item_diff3)
+
+  item_diff4 <- sum(data$item4)/831
+  cat(" Item Difficulty for item 4 =", item_diff4)
+
+  item_diff5 <- sum(data$item5)/831
+  cat(" Item Difficulty for item 5 =", item_diff5)
+
+  item_diff6 <- sum(data$item6)/831
+  cat("I tem Difficulty for item 6 =", item_diff6)
+
+  item_diff7 <- sum(data$item7)/831
+  cat(" Item Difficulty for item 7 =", item_diff7)
+
+  item_diff8 <- sum(data$item8)/831
+  cat(" Item Difficulty for item 8 =", item_diff8)
+
+  item_diff9 <- sum(data$item9)/831
+  cat(" Item Difficulty for item 9 =", item_diff9)
+
+  item_diff10 <-sum(data$item10)/831
+  cat(" Item Difficulty for item 10 =", item_diff10)
+
+```
+
+```{text2}
+<<Response>> 
+# Q1: Item 5 would be relatively easy for this sample (p=0.844)
+# Q2: Yes, the item difficulty would be true for samples within the same population. This would be due to item difficulty being sample dependent not test dependent. 
+# Q3: No, the item difficulty is sample specific not test specific. Utilizing the items in a different population would result in different item difficulty scores for all items. 
+ 
+```
+
+---
+
+# Q2
+
+*(2 points)* 
+
+- **Code **: Create a joint frequency distribution table for items 1 and 2, and items 3 and 5
+- **Code **: Calculate the inter-item correlation between items 1 and 2, and items 3 and 5 using the formula we defined in class (Lecture 2). 
+- **Response**: Describe the item-item relationship between the two sets of items. Which of them share more similarity? 
+
+```{r q2}
+# Your code here 
+###Joint Freq. Dist. Table items 1 and 2
+table1 <- table(data$item1,data$item2)
+table1
+
+###Inter-item Correlation
+  ###Item 1 and 2
+  pjk= 289/831
+  pj= 609/831
+  pk= 300/831
+  qj= 1-pj
+  qk= 1-pk 
+  i12rho = (pjk-(pj*pk))/(sqrt(pj*qj*pk*qk))
+  print(i12rho)
+
+
+###Joint Freq. Dist. Table items 3 and 5
+table2 <- table(data$item3, data$item5)
+table2
+
+  pjk= 180/831
+  pj= 203/831
+  pk= 701/831
+  qj= 1-pj
+  qk= 1-pk 
+  i35rho = (pjk-(pj*pk))/(sqrt(pj*qj*pk*qk))
+  print(i35rho)
+
+
+```
+
+```{text2}
+<<Response>> 
+# Your response here 
+  ###Based off of these results, item 1 and 2 have a higher inter-item correlation than item 3 and 5. This would suggest that these two items are more related to each other. 
+  
+```
+
+---
+
+# Q3
+*(2 points)* 
+
+- **Code**: Calculate CTT item discrimination for each item. 
+
+- **Response**: Provide a summary interpretation of the discrimination estimates.)
+
+```{r q3}
+# Your code here 
+library(CTT)
+Q3ia <- itemAnalysis(data, hardFlag=.25,pBisFlag=.15)
+Q3ia
+
+Q3ia$itemReport$pBis = round(Q3ia$itemReport$pBis)
+print(Q3ia$itemReport)
+
+```
+
+```{text3}
+<<Response>> 
+# Your response here 
+###There are several items that do a poor job discriminating. These would be items with point-biserial of zero (items 1, 3, 4, 5, 6, 7). The other items do a good job discriminating as they have a point-biserial of 1. 
+  
+```
+
+---
+
+# Q4
+*(1 point)* 
+- **Response**: Describe the alignment or lack of alignment between item 5’s discrimination estimate and item 5’s item-item relationships to other items.  
+
+```{text4}
+<<Response>> 
+# Your response here 
+  ###Item 5 does not do a good job discriminating (pbis of zero). This would suggest that the item is not doing a sufficient job measuring the same latent construct as the other items. This would be logical as it had a high item difficulty score as well. 
+  
+  
+```
+
+---
+
+# Q5
+*(2 points)* 
+- **Code**: Develop a histogram of the CTT test scores (Xi). 
+```{r q5}
+# Your code here 
+testscores <- rowSums(data)
+testscores
+hist(testscores)
+
+```
+
+---
+
+# Q6
+*(2 points)* 
+- **Code**: Use Cronbach’s Alpha as a rough estimate of reliability, and from that calculate the standard error of measurement (SEM) associated with the total test scores. 
+- **Response**: Interpret the SEM for a reader who is unfamiliar with the term.
+
+```{r q6}
+# Your code here 
+  ##find Reliability 
+    reliability(data)
+
+    ###Alpha and Variance 
+       ###Calculate Variance of Total scores 
+x= rowSums(data)
+varX = var(x)
+var_matrix = var(data)
+vars = diag(var_matrix)
+sum_vars = sum(vars)
+n_items = length(vars)
+alpha = (n_items/(n_items-1))*(1-(sum_vars/varX))
+print(alpha)  ###alpha is 0.76121
+print(varX)   ###variance is 6.356621
+  ###Calculate SEM 
+Rel <- 0.76 ###the alpha value 
+sd(x,na.rm = FALSE)*sqrt(1-0.76)
+
+```
+
+```{text6}
+# Your response here  
+### The SEM for the total test scores is 1.235. This is a high SEM, given the inverse relationship SEM has with reliability, the high SEM observed may indicate that the test assessed is not very reliable. 
+```
+
+---
+
+# Q7
+*(2 points)* 
+- **Code**: Develop a 95% confidence interval for an individual with a total test score of 9. 
+- **Response**: Interpret the interval.
+
+```{r q7}
+#Your code here 
+rel <- 0.76
+SEM <- sd(x,na.rm = FALSE)*sqrt(1-rel)
+### Test score of 9 
+LB <- 9 - 1.96 * SEM
+UB <- 9 + 1.96 * SEM
+
+print(LB)
+print(UB)
+    
+
+
+
+
+```
+
+```{text}
+#Your response here 
+### The confidence interval for an indivdual who scores a 9 ranges from 6.579 to 10. This would indicate that the person's true score (or observed score) falls within the range that it should. If the CI presented had not included the observed score, making decisions based off the indivdiual's score would need to cautiously be considered. 
+```
+
+---
+
+# Q8
+*(2 points)* 
+- **Code**:  Develop a 95% confidence interval for an individual with a total test score of 2. 
+- **Response**: Compare and contrast the interval to that from item (i).
+
+```{r q8}
+#Your code here 
+rel <- 0.76
+SEM <- sd(x,na.rm = FALSE)*sqrt(1-rel)
+
+### Test score of 2
+LB2 <- 2 - 1.96 * SEM
+UB2 <- 2 + 1.96 * SEM
+
+print(LB2)
+print(UB2)
+
+
+```
+
+```{text}
+# Your response here 
+##The CI for an individual who scores a 2 would be 0 to 4.421. Very similiar to the previous CI for the individual who scored a 9, the score of 2 falls within the CI range. However, the range of scores that this individual's true score (or observed) could fall is less than that of the individual that scored a 9. This is logical given that the individual had a smaller observed score than the individual with an observed score of 9. 
+```
+
+--- 
+
+# ====== Section 2 =======
+
+
+Use the `Assignment3Data1.dat` file to complete this portion of the assignment. The data consists of 16 observed variables (transformed to z-scores) with 402 individuals in each file. The purpose of this exercise is to practice implementing EFA models for continuously scored observed data, and to utilize the output to evaluate the number of latent factors underlying the dataset, and the manner in which the observed variables align with the latent factors. 
+
+```{r data1}
+data1 <- read_csv('https://raw.githubusercontent.com/jinnieshinufl/EDF-6436/main/assignment/data/Assignment1Data1.csv', col_names=TRUE)
+data1 <- as.data.frame(data1)#read.table("Assignment3Data1.dat", header=TRUE)
+head(data1) # this is the dataframe we will work with. 
+```
+
+---
+
+# Q9
+
+- **Code**: Run a traditional EFA on `data1`. Use principle axis factoring (PAF). Run the model with promax rotation. Provide your code. You may use the `EFAtools` and `psych` packages. 
+
+- **Step 1**: Assumption checking *(1 point)*
+```{r q9}
+# Your code here 
+library(corrplot)
+library(psych)
+library(EFAtools)
+
+###visual inspection of all variables using histogram 
+hist(data1$Var1)
+hist(data1$Var2)
+hist(data1$Var3)
+hist(data1$Var4)
+hist(data1$Var5)
+hist(data1$Var6)
+hist(data1$Var7)
+hist(data1$Var8)
+hist(data1$Var9)
+hist(data1$Var10)
+hist(data1$Var11)
+hist(data1$Var12)
+hist(data1$Var13)
+hist(data1$Var14)
+hist(data1$Var15)
+hist(data1$Var16)
+
+###visual inspection using q-q plot 
+qqnorm(data1$Var1)
+qqnorm(data1$Var2)
+qqnorm(data1$Var3)
+qqnorm(data1$Var4)
+qqnorm(data1$Var5)
+qqnorm(data1$Var6)
+qqnorm(data1$Var7)
+qqnorm(data1$Var8)
+qqnorm(data1$Var9)
+qqnorm(data1$Var10)
+qqnorm(data1$Var11)
+qqnorm(data1$Var12)
+qqnorm(data1$Var13)
+qqnorm(data1$Var14)
+qqnorm(data1$Var15)
+qqnorm(data1$Var16)
+
+###visual inspection through shapiro-wilks test 
+shapiro.test(data1$Var1)
+shapiro.test(data1$Var2)
+shapiro.test(data1$Var3)
+shapiro.test(data1$Var4)
+shapiro.test(data1$Var5)
+shapiro.test(data1$Var6)
+shapiro.test(data1$Var7)
+shapiro.test(data1$Var8)
+shapiro.test(data1$Var9)
+shapiro.test(data1$Var10) ##p-value less than 0.05
+shapiro.test(data1$Var11)
+shapiro.test(data1$Var12)
+shapiro.test(data1$Var13)
+shapiro.test(data1$Var14) ##p-value less than 0.05
+shapiro.test(data1$Var15)
+shapiro.test(data1$Var16)
+
+###Assumption check 
+  ###A1-Data Sphericity: Bartlett test of spherecity 
+  BARTLETT(data1) ###suitable for factor analysis p<0.001
+  ###A2-Sampling: Kaiser-Meyer Olkin 
+  KMO(data1) ###suitable for factor analysis overall: 0.901 
+```
+
+- **Step 2**: EFA analysis *(2 point)*
+```{r q92}
+# Your code here 
+###Looking into correlations
+data1 <- data1[,2:17]
+corrdata1 <- cor(data1)
+round(corrdata1, 3)
+corrplot(corrdata1, method='number', type='lower')
+assign('corrdata1', corrdata1, envir=globalenv()) ###how is this expanded to see all of the correlations visually?
+
+###Determine number of factors 
+  ###K-1 Method 
+  eigen_decomp <- eigen(corrdata1)
+  print(eigen_decomp)
+  ###3 factors greater than 1 
+  
+  ###Scree Plot 
+  scree(data1)
+  ###3 factors 
+  
+  ###Parallel Analysis 
+  fa.parallel(data1, fm='ml')
+  ##2 Factors
+  
+  ###Based off Three tests, would consider two to three factors 
+  
+###Factor Analysis 
+  three_factor <- fa(data1, 
+                     nfactors = 3, 
+                     fm= "pa", 
+                     rotate = "promax")
+  three_factor
+  
+  assign('three_factor', three_factor, envir=globalenv())
+  
+  three_factor_diagram <- fa.diagram(three_factor, cut = 0.30, sort = TRUE, digits = 3)
+  print(three_factor_diagram)
+  
+  two_factors <-fa(data1,
+                   nfactors=2,
+                   fm="pa", 
+                   rotate='promax')
+  two_factors
+  
+  assign('two_factors', two_factors, envir = globalenv())
+  
+  two_factor_diagram <-fa.diagram(two_factors, cut = 0.30, sort = TRUE, digits = 2)
+  print(two_factor_diagram)
+ 
+```
+
+---
+
+# Q10
+*(2 point)*
+
+- **Response**: Interpret the Communalities and Uniqueness values of variable 12. 
+```{response-2}
+# Your response here 
+##When considering the communalities and uniqueness values of variable 12, when examining the potential of 3 factors, 51% of the information is from communalities (h2) and 49% of the information is from uniqueness (u2). When considering the communaltieis and uniqueness of variable 12, when examining the potential of 2 factors, 48% of the information is from communalities (h2) and 52% of the information is from uniqueness (u2). 
+
+```
+
+---
+
+# Q11
+*(2 point)*
+
+- **Response**: Decide how many factors to extract and explain your answer. 
+```{response-3}
+# Your response here 
+  ###2 Factors will be extracted. This would be due to the TLI of a 2 factor model being 1 and the RMSEA of 0. Although the 3 factor model also provides similar information, we would want to utilize the factor model that best fits with the least amount of factors. 
+
+```
+
+---
+
+# Q12
+*(3 point)*
+
+- **Code and Response**: Create a factor score table and compare the factor scores of student 23 vs. student 30.  
+
+```{r q12}
+# Your code here 
+data1
+results <- factor.scores(data1,two_factors)
+results$scores
+
+```
+
+```{response4}
+# Your response here 
+###Factor score for student 23 performed poorly on the items that load onto factor 1 (-0.69) and performed positively on the items that load onto factor 2 (1.40)
+###Factor score for student 30 performed slightly well on the items that load onto factor 1 (0.18) and poorly on the items that load onto factor 2 (.-40). 
+
+
+```
+
+---
+
+# Q13
+*(2 point)*
+
+- **Response**: For each of the latent factors you retain, describe which observed variables measure the factor.
+
+```{response5}
+# Your response here 
+##Factor 1 (PA1)-Variables 5,8,10,11,12,13,14,15
+
+##Factor 2 (PA2)-Variables 1,2,3,4,6,7,9,16
+```
+
+---
+
+# Q14
+*(2 point)*
+
+- **Response**: If you retain more than one factor, interpret the correlations between the multiple latent factors. If you do not retain more than one factor, state that here.
+
+```{response6}
+# There is no correlation between the multiple latent factors (no connection between the two factors as there is no arrow connecting the two). With the factor correlation between  PA1 and PA2 being -0.03. 
+```
+
+--- 
+
+# ====== Section 3 =======
+
+You’ve been provided operational, binary data on a 24 item science test collected from 879 5th grade teachers (called `Assignment3Data2`). All items were categorically scored and were designed to measure a single latent construct (i.e. science content knowledge). 
+
+```{r data2}
+data2 <- read_csv('https://raw.githubusercontent.com/jinnieshinufl/EDF-6436/main/assignment/data/Assignment1Data2.csv', col_names=TRUE)
+data2 <- as.data.frame(data2)
+colnames(data2) <- c("Var1", "Var2", "Var3", "Var4", "Var5", "Var6", "Var7", "Var8", "Var9", 
+                     "Var10", "Var11", "Var12", "Var13", "Var14", "Var15", "Var16", "Var17", 
+                     "Var18", "Var19", "Var20", "Var21", "Var22", "Var23", "Var24")
+head(data2) # this is the dataframe we will work with. 
+```
+
+--- 
+
+# Q15
+*(3 point) * 
+
+- **Code**: Run a confirmatory factor analysis on the given data using WLSMV estimation, and provide your code.
+
+```{r p2q1}
+# Your code here 
+library(lavaan)
+library(semTools)
+###Assumption Check 
+multi_out <- mardiaKurtosis(data2, use = "everything")
+round(multi_out,3)
+
+multi_out2 <- mardiaSkew(data2, use = "everything")
+round(multi_out2,3)
+
+####specify model 
+model <- "science content knowledge =~ Var1 + Var2 + Var3 + Var4 + Var5 + Var6 + Var7 + Var8 + Var9
+          + Var10 + Var11 + Var12 + Var13 + Var14 + Var15 + Var16 + Var17 + Var18 +Var19 + Var20 + Var21 + Var22 + Var23 + Var24"
+
+cfa_fit <- cfa(model, 
+               data= data2, 
+               estimator= 'MLR',
+               mimic = "Mplus",
+               )
+
+###examining model fit 
+summary(cfa_fit, 
+        fit.measures = TRUE,
+        standardized = TRUE,
+        rsquare = TRUE)
+
+###Examine Model Fit indices 
+fit_stats <- fitmeasures(cfa_fit, c("chisq.scaled","df.scaled", "pvalue.scaled", 
+                                    "cfi.robust", 
+                                    "tli.robust", 
+                                    "rmsea.robust", 
+                                    "srmr"))
+print(fit_stats)
+
+```
+
+---
+
+# Q16
+*(2 point)* 
+
+- **Response 1**: Discuss the fit of the model based on multiple fit indices, and conclude whether the model fits the data adequately.
+```{text2}
+<<Response 2>> 
+# Your response here 
+  ###Chi-Squared Fit--overall fit. p-value is o (sample is large (n=879))
+  ###CFI-comparing fit of a target model to the fit of an independent model. 0.843, would not appear to be a good fit (does not reach grater than 0.90)
+  ###RMSEA-adjusted index. Would indicate that this model is a good fit (less than 0.05).
+  ###SRMR-Would indicate that the model is a good fit with a value of less than 0.08 and 0.05 (actual value   is 0.044)
+  
+  
+```
+
+---
+
+# Q17
+
+*(1 point)* 
+
+- **Response**: Interpret the variance explained and variance unexplained for item 11.
+```{part2-response3}
+# According to the rsquared score, 0.123 of the variance was explained by the factor. The remaining variance would then be unexplained by the factor and is likely due to error. 
+```
+
+---
+
+# Q18
+*(1 point)* 
+
+- **Response** Interpret the standardized factor loading for item 15.
+```{r q33}
+#The standardized factor loading for item 15 is extremely low (0.047), suggesting that item 15 is loading poorly on the model. 
+
+
+
+
+```
+
+---
+
+# Q19
+*(2 point)* 
+
+- **Code + Response**: Calculate and interpret the omega coefficient of reliability.
+```{r p2q5}
+# Your code here 
+library('semTools')
+reliability(cfa_fit)
+
+```
+
+```{part2-response5}
+# According to the omega coefficient of reliability, the magnitude of the factor loading is high (given the relationship between omega and factor loading) and the amount of error variance is rather low (inverse relationship with omega). This would suggest that the items are loading well onto the factor and are evaluating the factor sufficiently. 
+```
+
+---
+
+# Q20 
+*(3 point)* 
+
+- **Code**: (1) Fit the 2PL model and (2) Evaluate item fit for the 2PL
+```{r p222}
+# Your code here 
+library(ltm)
+data2.1 <- as.matrix(data2[1:879, 1:24])
+two.pl.model <- ltm(data2.1 ~ z1)
+
+###Assess item fit 
+item.fit(two.pl.model, simulate.p.value = T)
+
+###Plot ICC of test 
+plot(two.pl.model)
+
+
+
+
+```
+
+--- 
+
+# Q21
+*(2 point)* 
+
+- **Code**: Create a table that includes all freely estimated item parameter estimates from the 2PL. 
+```{r p223}
+# Your code here 
+###Extracting a and b parameters 
+item.pars.two.pl <-coef(two.pl.model)
+item.pars.two.pl <- as.data.frame(item.pars.two.pl)
+item.pars.two.pl
+```
+
+--- 
+
+# Q22
+*(1 point)* 
+
+- **Response**:  Interpret each item parameter estimate for item 2.
+```{response224}
+###For item 2, the difficulty ( b-parameter) -1.51. is the discrimination ( a-parameter) is 0.99. This would indicate that those with a latent ability (theta) of -1.51 have a 50% chance of answering the question correctly. The a-parameter would indicate that this item is very good at discriminating between those with a higher theta and those with a lower theta. 
+```
+
+--- 
+
+# Q23
+*(1 point)* 
+
+- **Code**: Create and interpret the ICC for item 2.
+```{r p225}
+# Your code here 
+plot(two.pl.model, items = c(2), main= "ICC for Item 2")
+```
+
+# Q24
+*(2 point)* 
+
+- **Code**: Create a graphic of the test information conditioned on theta, and interpret it.
+```{r p226}
+# Your code here 
+plot(two.pl.model, type="IIC", items = 0, lwd=2, main= "TIC")
+```
+
+---
+
+# Q25
+*(2 point)* 
+
+- **Response**: Discuss what you know about conditional standard errors of measurement, based on the test information graph.
+```{response226}
+# Your code here 
+##The lowest amount of error when testing will be awhere the most amount of information will be gained. In this case, the most amount of information is being gathered when the theta is around -2. Therefore, the lowest amount of error will also be found around the theta of -2. The most amount of error will occur when the least amount of information is being collected. In the case of item 2, this will be around the ability level (theta) of 2. 
+```
